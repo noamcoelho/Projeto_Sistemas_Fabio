@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+resultados/
+!resultados/.gitkeep
+.claude/
+nuvem/terraform/.terraform/
+nuvem/terraform/*.tfstate*
+nuvem/terraform/.terraform.lock.hcl
+*.pem
+relatorio/*.pdf
