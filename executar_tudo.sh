@@ -1,5 +1,5 @@
 #!/bin/bash
-# Roteiro completo no Linux (instância na nuvem): teste rápido, corrida, benchmark.
+# Roteiro completo no Linux/macOS: teste rápido, corrida, benchmark.
 # Uso: ./executar_tudo.sh [perfil=completo] [repeticoes=3]
 set -e
 cd "$(dirname "$0")"

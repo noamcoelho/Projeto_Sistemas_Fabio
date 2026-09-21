@@ -1,7 +1,7 @@
 """Serviço HTTP (porta 8080) que publica os resultados da simulação.
 
-É a "porta do serviço" liberada no grupo de segurança da instância. Mostra a
-tabela de cenários, o benchmark e permite disparar uma execução pela URL.
+Opcional: mostra a tabela de cenários e o benchmark no navegador e permite
+disparar uma execução pela URL.
 
 Uso:
     python src/servidor.py --porta 8080
@@ -43,7 +43,7 @@ def pagina():
               "<style>body{font-family:system-ui;max-width:900px;margin:2rem auto;padding:0 1rem}"
               "pre{background:#f4f4f4;padding:1rem;overflow-x:auto}</style>",
               "<h1>Simulação de políticas de vacinação — SIR paralelo</h1>",
-              f"<p>CPUs disponíveis nesta instância: <b>{cpus_disponiveis()}</b></p>",
+              f"<p>CPUs disponíveis nesta máquina: <b>{cpus_disponiveis()}</b></p>",
               "<p>Executar: " + " | ".join(
                   f"<a href='/executar?modo={m}&perfil={p}&processos={cpus_disponiveis()}'>{m} {p}</a>"
                   for p in ("rapido", "demo") for m in ("sequencial", "paralelo")) + "</p>"]

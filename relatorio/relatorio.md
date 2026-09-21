@@ -109,30 +109,11 @@ Resultado obtido na máquina de desenvolvimento:
 | 3 | 599 | 400.128 | 600 | 402.293 |
 
 Sem a trava, réplicas "desaparecem" das somas e o SHA-256 muda a cada execução; com a trava,
-as três execuções são idênticas ao sequencial. _(Repetir na instância e atualizar a tabela.)_
+as três execuções são idênticas ao sequencial.
 
-# 4. Recursos provisionados
+# 4. Tempos medidos, speedup e o que limitou o ganho
 
-| Item | Valor |
-|---|---|
-| Provedor / região / zona | AWS — `sa-east-1` (São Paulo) — `sa-east-1a` |
-| Tipo de instância | `c6i.2xlarge`: 8 vCPUs (4 núcleos físicos Intel Ice Lake com hyper-threading), 16 GiB |
-| Imagem / software | Ubuntu Server 24.04 LTS, Python 3.12 (biblioteca padrão apenas) |
-| Provisionamento | Terraform (`nuvem/terraform/`) ou AWS CLI (`nuvem/criar_instancia_aws.sh`), com script de inicialização que clona o repositório e sobe o serviço |
-| Grupo de segurança | `sd-vacinacao-sg` |
-
-| Direção | Porta | Origem | Função |
-|---|---|---|---|
-| Entrada | 22/TCP | `_(IP da equipe)_/32` | administrativa (SSH) — **restrita à origem da equipe** |
-| Entrada | 8080/TCP | `0.0.0.0/0` | serviço HTTP da aplicação (`src/servidor.py`) |
-| Saída | todas | `0.0.0.0/0` | `apt`, `git clone` |
-
-O Terraform contém uma validação que **recusa `0.0.0.0/0` na porta 22**; o script da CLI
-aborta na mesma condição. A instância é destruída após a apresentação (`terraform destroy`).
-
-# 5. Tempos medidos, speedup e o que limitou o ganho
-
-Todas as medições foram feitas **na mesma instância, com a mesma entrada** (perfil `completo`:
+Todas as medições foram feitas **na mesma máquina, com a mesma entrada** (perfil `completo`:
 500 réplicas, 200 mil agentes), **3 vezes** cada; reportamos a mediana. O `benchmark.py`
 também confere que o SHA-256 de todas as execuções é o mesmo.
 
@@ -141,7 +122,7 @@ de tarefas), simulação e finalização (consolidar e gravar o JSON). Medimos
 f = t_simulação / t_total = **0,9996**; a parte inerentemente sequencial é ~0,04 % (a gravação
 do arquivo). O teto de Amdahl é S(p) ≤ 1 / ((1 − f) + f/p).
 
-_(Colar aqui a tabela de `resultados/benchmark_completo.md` gerada na instância.)_
+_(Colar aqui a tabela de `resultados/benchmark_completo.md`.)_
 
 | Processos | Tempo (s) | Speedup medido | Teto de Amdahl | Eficiência | Espera na trava (s) | Desbalanceamento |
 |---:|---:|---:|---:|---:|---:|---:|
@@ -168,9 +149,9 @@ trabalham).
 
 **O que limitou a diferença entre o medido e o teto de Amdahl:**
 
-1. **Hyper-threading.** A `c6i.2xlarge` tem 8 vCPUs mas apenas 4 núcleos físicos. Dois processos
-   no mesmo núcleo disputam as unidades de execução; o ganho de 4 → 8 processos é bem menor que
-   2×. É a principal causa da queda de eficiência em p = 8.
+1. **Hyper-threading.** Se a máquina expõe mais CPUs lógicas do que núcleos físicos, dois
+   processos no mesmo núcleo disputam as unidades de execução e o ganho ao dobrar os processos
+   fica bem abaixo de 2×.
 2. **Divisão desigual do trabalho.** As réplicas variam de ~0,05 s (80 %) a ~0,7 s (0 %). A fila
    dinâmica equilibra a maior parte, mas no fim da execução alguns processos ficam ociosos
    enquanto os últimos terminam réplicas pesadas — medido como *desbalanceamento* (diferença
@@ -198,4 +179,3 @@ cerca de _(Z)_ % em relação ao cenário sem vacina.
 - Amdahl, G. M. *Validity of the single processor approach to achieving large scale computing capabilities*, 1967.
 - Python Software Foundation. *multiprocessing — Process-based parallelism*; *Thread State and the Global Interpreter Lock*.
 - IBGE. Censo Demográfico 2022 — pirâmide etária. CNES/DataSUS — leitos por habitante.
-- AWS. *Amazon EC2 C6i instances*; *Security groups for your VPC*.

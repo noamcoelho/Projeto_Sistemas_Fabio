@@ -24,8 +24,7 @@ imprimir como PDF (margens 2 cm).
 ## Antes de gerar
 
 - [ ] Preencher nomes da equipe e URL do repositório no cabeçalho.
-- [ ] Colar a tabela de `resultados/benchmark_completo.md` gerada **na instância**.
-- [ ] Atualizar a tabela do teste de corrida com a execução na instância.
-- [ ] Preencher o IP da equipe na tabela do grupo de segurança.
+- [ ] Colar a tabela de `resultados/benchmark_completo.md` (3 repetições, mesma máquina).
+- [ ] Atualizar a tabela do teste de corrida se rodar em outra máquina.
 - [ ] Preencher os valores X, Y, Z da conclusão.
 - [ ] Conferir que ficou em **até seis páginas**.

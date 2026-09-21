@@ -61,13 +61,13 @@ python src/verificar.py resultados/sequencial_demo.json resultados/paralelo_demo
 
 python src/demo_corrida.py                        # mostra a condição de corrida sem o Lock
 python src/benchmark.py --perfil completo --repeticoes 3 --processos 1 2 4 8
-python src/servidor.py --porta 8080               # serviço HTTP com os resultados
+python src/servidor.py --porta 8080               # opcional: resultados no navegador (http://localhost:8080)
 ```
 
 Perfis (`src/comum.py`): `rapido` (teste, segundos), `corrida` (seção crítica sob estresse),
 `demo` (apresentação, ~45 s sequencial), `completo` (relatório, minutos).
 
-No Windows: `executar_tudo.ps1`; no Linux/instância: `executar_tudo.sh`.
+No Windows: `executar_tudo.ps1`; no Linux/macOS: `executar_tudo.sh`.
 
 ## Estrutura
 
@@ -79,14 +79,9 @@ src/paralelo.py      versão paralela (Queue + Manager + Lock)
 src/demo_corrida.py  prova da condição de corrida e da correção com o Lock
 src/verificar.py     compara dois resultados (SHA-256 + diferenças)
 src/benchmark.py     tempos, speedup, eficiência e teto de Amdahl -> resultados/benchmark_*.md
-src/servidor.py      serviço HTTP na porta 8080
-nuvem/               Terraform + AWS CLI + script de inicialização da instância
+src/servidor.py      serviço HTTP opcional (porta 8080) para ver os resultados no navegador
 relatorio/           relatório técnico (Markdown -> PDF)
 apresentacao/        roteiro dos 10 minutos e perguntas de arguição
 resultados/          saídas (JSON/MD) — geradas, não versionadas
 ```
 
-## Nuvem
-
-AWS `sa-east-1` (São Paulo), zona `sa-east-1a`, `c6i.2xlarge` (8 vCPUs). Grupo de segurança:
-porta 22 restrita ao IP da equipe, porta 8080 aberta. Detalhes em [nuvem/README.md](nuvem/README.md).
