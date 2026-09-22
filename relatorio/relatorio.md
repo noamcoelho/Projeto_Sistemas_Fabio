@@ -113,39 +113,29 @@ as três execuções são idênticas ao sequencial.
 
 # 4. Tempos medidos, speedup e o que limitou o ganho
 
-Todas as medições foram feitas **na mesma máquina, com a mesma entrada** (perfil `completo`:
-500 réplicas, 200 mil agentes), **3 vezes** cada; reportamos a mediana. O `benchmark.py`
-também confere que o SHA-256 de todas as execuções é o mesmo.
+Todas as medições foram feitas **na mesma máquina, com a mesma entrada** (Windows 11,
+8 núcleos físicos sem hyper-threading, Python 3.12; perfil `completo`: 500 réplicas, 200 mil
+agentes), **3 vezes** cada; reportamos a mediana. O `benchmark.py` também confere que o SHA-256
+de todas as execuções é o mesmo (`372d276d…`, idêntico nas 15 execuções).
 
 **Fração paralelizável.** Na versão sequencial, o tempo é dividido em preparação (gerar a lista
 de tarefas), simulação e finalização (consolidar e gravar o JSON). Medimos
-f = t_simulação / t_total = **0,9996**; a parte inerentemente sequencial é ~0,04 % (a gravação
+f = t_simulação / t_total = **0,9999**; a parte inerentemente sequencial é ~0,01 % (a gravação
 do arquivo). O teto de Amdahl é S(p) ≤ 1 / ((1 − f) + f/p).
 
-_(Colar aqui a tabela de `resultados/benchmark_completo.md`.)_
-
 | Processos | Tempo (s) | Speedup medido | Teto de Amdahl | Eficiência | Espera na trava (s) | Desbalanceamento |
 |---:|---:|---:|---:|---:|---:|---:|
-| 1 (sequencial) | _T_seq_ | 1,00× | 1,00× | 100 % | — | — |
-| 2 | | | 2,00× | | | |
-| 4 | | | 3,99× | | | |
-| 8 | | | 7,98× | | | |
+| sequencial | 174,84 | 1,00× | 1,00× | 100 % | — | — |
+| 1 | 178,08 | 0,98× | 1,00× | 98 % | 0,002 | 0 % |
+| 2 | 89,73 | 1,95× | 2,00× | 97 % | 0,004 | 0 % |
+| 4 | 41,18 | 4,25× | 4,00× | 106 % | 0,003 | 0 % |
+| 8 | 29,47 | 5,93× | 7,99× | 74 % | 0,005 | 2 % |
 
-**Medições preliminares na máquina de desenvolvimento** (Windows 11, 8 núcleos físicos sem
-hyper-threading, Python 3.12, perfil `demo`: 250 réplicas de 100 mil agentes, 2 repetições,
-T_seq = 43,25 s, f = 0,9996):
-
-| Processos | Tempo (s) | Speedup medido | Teto de Amdahl | Eficiência | Espera na trava (s) | Desbalanceamento |
-|---:|---:|---:|---:|---:|---:|---:|
-| 1 | 42,81 | 1,01× | 1,00× | 101 % | 0,001 | 0 % |
-| 2 | 20,81 | 2,08× | 2,00× | 104 % | 0,002 | 0 % |
-| 4 | 10,68 | 4,05× | 3,99× | 101 % | 0,005 | 1 % |
-| 8 | 7,03 | 6,15× | 7,97× | 77 % | 0,003 | 4 % |
-
-O speedup levemente superlinear em 2 e 4 processos vem do *turbo boost*: com poucos núcleos
-ativos o processador opera em frequência maior do que com todos ocupados. O mesmo efeito, ao
-contrário, explica parte da perda em 8 processos (a frequência cai quando todos os núcleos
-trabalham).
+A versão paralela com 1 processo custa ~2 % a mais que a sequencial: é o custo fixo de criar o
+processo trabalhador, o gerente e a fila. O speedup levemente superlinear em 4 processos vem do
+*turbo boost*: com poucos núcleos ativos o processador opera em frequência maior do que com
+todos ocupados. O mesmo efeito, ao contrário, explica parte da perda em 8 processos (a
+frequência cai quando todos os núcleos trabalham).
 
 **O que limitou a diferença entre o medido e o teto de Amdahl:**
 
@@ -168,10 +158,10 @@ trabalham).
    Uma trava em torno do laço inteiro zeraria o ganho; o desenho evita isso.
 
 **Conclusão.** A versão paralela produz exatamente o mesmo resultado que a sequencial, com
-speedup de _(X)_× em 8 processos (_(Y)_× em 4, próximo do teto de Amdahl de 3,99×). Para a
+speedup de 5,93× em 8 processos (4,25× em 4, ligeiramente acima do teto de Amdahl de 4,00×). Para a
 política pública, os resultados indicam que a partir de **40 % de cobertura (priorizando idosos)**
 a probabilidade de colapso hospitalar cai a zero neste modelo, e que 60 % reduz os óbitos em
-cerca de _(Z)_ % em relação ao cenário sem vacina.
+cerca de 84 % em relação ao cenário sem vacina.
 
 # Referências
 
